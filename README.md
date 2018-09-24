@@ -1,5 +1,5 @@
 # Wiki
- * Implementation of CNN from scratch with Numpy [CNN from scratch] 
+ * Implementation of CNN from scratch with Numpy ([CNN from scratch]) 
 
 
 

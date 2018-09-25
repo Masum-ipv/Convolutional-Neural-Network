@@ -3,7 +3,7 @@ import numpy
 import math, random
 from utils import conv, relu, pooling
 from grapical_view import show
-from neural_network import backpropagate
+from neural_network import backpropagate, predict
 
 '''
 The major steps involved are as follows:
@@ -95,8 +95,8 @@ inputs = [fc]
 
 targets = [[1 if i == j else 0 for i in range(10)]
                for j in range(10)]
-print(inputs)
-print(targets)
+# print(inputs)
+# print(targets)
 
 random.seed(0)   # to get repeatable results
 input_size = len(fc)  # each input is a vector of length 49
@@ -113,9 +113,13 @@ output_layer = [[random.random() for __ in range(num_hidden + 1)]
 
 # the network starts out with random weights
 network = [hidden_layer, output_layer]
+# print("network1",network)
 
 # 100 iterations seems enough to converge // 10000
 for __ in range(10000):
     for input_vector, target_vector in zip(inputs, targets):
         backpropagate(network, input_vector, target_vector)
+# print("network2",network)
 
+
+print(predict(network,fc))

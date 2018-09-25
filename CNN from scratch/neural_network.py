@@ -70,6 +70,9 @@ def patch(x, y, hatch, color):
     return matplotlib.patches.Rectangle((x - 0.5, y - 0.5), 1, 1,
                                         hatch=hatch, fill=False, color=color)
 
+                                        
+def predict(network, input):
+    return feed_forward(network, input)[-1]                               
 
 def show_weights(neuron_idx):
     weights = network[0][neuron_idx]

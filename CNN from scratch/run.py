@@ -1,83 +1,45 @@
+import math, random, os
 from skimage import data, io, color
-import numpy
-import math, random
-from utils import conv, relu, pooling
 from grapical_view import show
 from neural_network import backpropagate, predict
+from convolution import connvolution_process
 
+inputs = [] # Train data
+targets = [] # Train result
+result = [[1 if i == j else 0 for i in range(10)]
+                   for j in range(10)]
 
-'''----------------------Reading the image-------------------------------'''
-img = io.imread("data/B0_01.jpg")
-# print(img.shape) # 3D image
-
-# Converting the image into gray.
-img = color.rgb2gray(img)
-# print(img.shape) # 2D image
-# io.imshow(img)
-# plt.show()
-
-
-
-'''----------------------Preparing Filter-------------------------------'''
-l1_filter = numpy.zeros((2,3,3))
-# Vertical ditector Filter
-l1_filter[0, :, :] = numpy.array([[[-1, 0, 1],
-
-                                   [-1, 0, 1],
-
-                                   [-1, 0, 1]]])
-# Horizontal ditector Filter
-l1_filter[1, :, :] = numpy.array([[[1,   1,  1],
-
-                                   [0,   0,  0],
-
-                                   [-1, -1, -1]]])
-# print(l1_filter)
-
-'''---------------------- Convolutional Layer 1 ---------------------------'''
-l1_feature_map = conv(img, l1_filter)
-print("l1_feature_map", l1_feature_map.shape)
-l1_feature_map_relu = relu(l1_feature_map)
-print("l1_feature_map_relu", l1_feature_map_relu.shape)
-l1_feature_map_relu_pool = pooling(l1_feature_map_relu, 2, 2)
-print("l1_feature_map_relu_pool", l1_feature_map_relu_pool.shape)
-print("**End of conv layer 1**\n\n")
-
-'''---------------------- Convolutional Layer 2 ---------------------------'''
-l2_filter = numpy.random.rand(3, 5, 5, l1_feature_map_relu_pool.shape[-1])
-l2_feature_map = conv(l1_feature_map_relu_pool, l2_filter)
-print("l2_feature_map", l2_feature_map.shape)
-l2_feature_map_relu = relu(l2_feature_map)
-print("l2_feature_map_relu", l2_feature_map_relu.shape)
-l2_feature_map_relu_pool = pooling(l2_feature_map_relu, 2, 2)
-print("l2_feature_map_relu_pool", l2_feature_map_relu_pool.shape)
-print("**End of conv layer 2**\n\n")
-
-'''---------------------- Convolutional Layer 3 ---------------------------'''
-l3_filter = numpy.random.rand(1, 7, 7, l2_feature_map_relu_pool.shape[-1])
-l3_feature_map = conv(l2_feature_map_relu_pool, l3_filter)
-print("l3_feature_map", l3_feature_map.shape)
-l3_feature_map_relu = relu(l3_feature_map)
-print("l3_feature_map_relu", l3_feature_map_relu.shape)
-l3_feature_map_relu_pool = pooling(l3_feature_map_relu, 2, 2)
-print("l3_feature_map_relu_pool", l3_feature_map_relu_pool.shape)
-print("**End of conv layer 3**\n\n")
-
-'''---------------------- Graphing results of convolution ---------------------------'''
-# show(img, l1_feature_map, l1_feature_map_relu, l1_feature_map_relu_pool, l2_feature_map, l2_feature_map_relu, l2_feature_map_relu_pool, l3_feature_map, l3_feature_map_relu, l3_feature_map_relu_pool)
-
-
-
-
-'''---------------------- Fully Connected layer ---------------------------'''
-print("**Fully connected layer(Convolutional layer to Fully connected layer**")
-fc = l3_feature_map_relu_pool.reshape(-1)
-print(fc.shape)
-
-inputs = [fc]
-
-targets = [[1 if i == j else 0 for i in range(10)]
-               for j in range(10)]
+directory = os.fsencode("data/")
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    img = io.imread("data/" + filename)
+    print("filename ", filename)
+    if filename.startswith("B0"): 
+        serial = 0
+    elif filename.startswith("B1"):
+        serial = 1
+    elif filename.startswith("B2"):
+        serial = 2
+    elif filename.startswith("B3"):
+        serial = 3
+    elif filename.startswith("B4"):
+        serial = 4
+    elif filename.startswith("B5"):
+        serial = 5
+    elif filename.startswith("B6"):
+        serial = 6
+    elif filename.startswith("B7"):
+        serial = 7
+    elif filename.startswith("B8"):
+        serial = 8
+    elif filename.startswith("B9"):
+        serial = 9
+    fc = connvolution_process(img)  # Return Fully connected layer
+    
+    # Append corresponding train data and result
+    inputs.append(fc)
+    targets.append(result[serial])
+    
 # print(inputs)
 # print(targets)
 
@@ -100,7 +62,7 @@ network = [hidden_layer, output_layer]
 
 '''---------------------- Backpropagation ---------------------------'''
 # 10000 iterations seems enough to converge // 10000
-for __ in range(10000):
+for __ in range(100):
     for input_vector, target_vector in zip(inputs, targets):
         backpropagate(network, input_vector, target_vector)
 

@@ -115,3 +115,12 @@ def show(img, l1_feature_map, l1_feature_map_relu, l1_feature_map_relu_pool, l2_
 
     matplotlib.pyplot.savefig("L3.png", bbox_inches="tight")
     matplotlib.pyplot.close(fig3)
+    
+def draw_output(img, file_name, percentage):
+    fig0, ax0 = matplotlib.pyplot.subplots(nrows=1, ncols=1)
+    ax0.imshow(img).set_cmap("gray")
+    ax0.set_title(percentage)
+    ax0.get_xaxis().set_ticks([])
+    ax0.get_yaxis().set_ticks([])
+    matplotlib.pyplot.savefig(file_name, bbox_inches="tight")
+    matplotlib.pyplot.close(fig0)

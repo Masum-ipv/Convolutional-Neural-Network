@@ -1,6 +1,6 @@
 import math, random, os
 from skimage import data, io, color
-from grapical_view import show
+from grapical_view import draw_output
 from neural_network import backpropagate, predict
 from convolution import connvolution_process
 
@@ -62,9 +62,18 @@ network = [hidden_layer, output_layer]
 
 '''---------------------- Backpropagation ---------------------------'''
 # 10000 iterations seems enough to converge // 10000
-for __ in range(100):
+for __ in range(10):
     for input_vector, target_vector in zip(inputs, targets):
         backpropagate(network, input_vector, target_vector)
 
 '''---------------------- Predict the output ---------------------------'''
-print(predict(network,fc))
+directory = os.fsencode("test/")
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    print(filename)
+    img = io.imread("test/" + filename)
+    fc = connvolution_process(img)  # Return Fully connected layer
+    pred_list = predict(network, fc)
+    print("\n\n\nPrediction : ", pred_list)
+    print("*************** See the Result Folder to see Test image result with image ************************")  
+    draw_output(img, "Output_" + filename, max(pred_list), pred_list.index(max(pred_list)))

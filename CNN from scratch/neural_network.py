@@ -1,7 +1,6 @@
 from __future__ import division
 from collections import Counter
 from functools import partial
-
 import math, random
 import matplotlib
 import matplotlib.pyplot as plt

@@ -15,7 +15,7 @@ def conv(img, conv_filter):
 
     # Convolving the image by the filter(s).
     for filter_num in range(conv_filter.shape[0]):
-        print("Filter ", filter_num + 1)
+        # print("Filter ", filter_num + 1)
         curr_filter = conv_filter[filter_num, :] # getting a filter from the bank.
         # print("curr_filter ", curr_filter)
         """ 

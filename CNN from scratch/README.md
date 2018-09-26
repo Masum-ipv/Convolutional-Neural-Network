@@ -1,3 +1,6 @@
+## Implementation of Bangla Handwriting Recognition From Scratch
+
+
 ### The major steps involved are as follows:
 
 1. Reading the input image.
@@ -27,7 +30,9 @@ $ python run.py
 ```
 
 
-
+data Folder: Train Data
+test Folder: Test Data
+result Folder: Test Data Graphical View
 
 
 #### Resources:

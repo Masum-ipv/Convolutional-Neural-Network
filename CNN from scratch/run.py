@@ -5,23 +5,6 @@ from utils import conv, relu, pooling
 from grapical_view import show
 from neural_network import backpropagate, predict
 
-'''
-The major steps involved are as follows:
-
-1. Reading the input image.
-
-2. Preparing filters.
-
-3. Conv layer: Convolving each filter with the input image.
-
-4. ReLU layer: Applying ReLU activation function on the feature maps (output of conv layer).
-
-5. Max Pooling layer: Applying the pooling operation on the output of ReLU layer.
-
-6. Stacking conv, ReLU, and max pooling layers.
-
-'''
-
 
 '''----------------------Reading the image-------------------------------'''
 img = io.imread("data/B0_01.jpg")
@@ -113,13 +96,13 @@ output_layer = [[random.random() for __ in range(num_hidden + 1)]
 
 # the network starts out with random weights
 network = [hidden_layer, output_layer]
-# print("network1",network)
 
-# 100 iterations seems enough to converge // 10000
+
+'''---------------------- Backpropagation ---------------------------'''
+# 10000 iterations seems enough to converge // 10000
 for __ in range(10000):
     for input_vector, target_vector in zip(inputs, targets):
         backpropagate(network, input_vector, target_vector)
-# print("network2",network)
 
-
+'''---------------------- Predict the output ---------------------------'''
 print(predict(network,fc))

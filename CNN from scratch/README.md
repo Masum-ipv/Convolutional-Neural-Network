@@ -30,9 +30,9 @@ $ python run.py
 ```
 
 
-data Folder: Train Data
-test Folder: Test Data
-result Folder: Test Data Graphical View
+* data Folder: Train Data
+* test Folder: Test Data
+* result Folder: Test Data Graphical View
 
 
 #### Resources:

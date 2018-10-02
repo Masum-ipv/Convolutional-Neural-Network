@@ -1,13 +1,119 @@
+from __future__ import division
 import math, random, os
 from skimage import data, io, color
 from grapical_view import draw_output
-from neural_network import backpropagate, predict
 from convolution import connvolution_process
+from collections import Counter
+from functools import partial
+import matplotlib
+import numpy as np
+from helper import initialize_parameters_deep, L_model_forward, compute_cost, L_model_backward
 
+def step_function(x):
+    return 1 if x >= 0 else 0
+
+def perceptron_output(weights, bias, x):
+    """returns 1 if the perceptron 'fires', 0 if not"""
+    return step_function(dot(weights, x) + bias)
+
+def sigmoid(t):
+    return 1 / (1 + math.exp(-t))
+
+def dot(v, w):
+    """v_1 * w_1 + ... + v_n * w_n"""
+    return sum(v_i * w_i for v_i, w_i in zip(v, w))
+    
+def neuron_output(weights, inputs):
+    return sigmoid(dot(weights, inputs))
+
+def feed_forward(neural_network, input_vector):
+    """takes in a neural network (represented as a list of lists of lists of weights)
+    and returns the output from forward-propagating the input"""
+
+    outputs = []
+
+    for layer in neural_network:
+
+        input_with_bias = input_vector + [1]             # add a bias input
+        output = [neuron_output(neuron, input_with_bias) # compute the output
+                  for neuron in layer]                   # for this layer
+        outputs.append(output)                           # and remember it
+
+        # the input to the next layer is the output of this one
+        input_vector = output
+    
+    print(outputs)
+    return outputs
+
+def backpropagate(network, input_vector, target):
+
+    hidden_outputs, outputs = feed_forward(network, input_vector)
+    
+    # the output * (1 - output) is from the derivative of sigmoid
+    output_deltas = [output * (1 - output) * (output - target[i])
+                     for i, output in enumerate(outputs)]
+
+    # adjust weights for output layer (network[-1])
+    for i, output_neuron in enumerate(network[-1]):
+        for j, hidden_output in enumerate(hidden_outputs + [1]):
+            output_neuron[j] -= output_deltas[i] * hidden_output
+
+    # back-propagate errors to hidden layer
+    hidden_deltas = [hidden_output * (1 - hidden_output) * 
+                      dot(output_deltas, [n[i] for n in network[-1]]) 
+                     for i, hidden_output in enumerate(hidden_outputs)]
+
+    # adjust weights for hidden layer (network[0])
+    for i, hidden_neuron in enumerate(network[0]):
+        for j, input in enumerate(input_vector + [1]):
+            hidden_neuron[j] -= hidden_deltas[i] * input
+
+            
+def predict(network, input):
+    print(input)
+    return feed_forward(network, input)[-1]
+    
+def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False):#lr was 0.009
+
+    np.random.seed(1)
+    costs = []                         # keep track of cost
+    
+    parameters = initialize_parameters_deep(layers_dims)
+
+    # Loop (gradient descent)
+    for i in range(0, num_iterations):
+
+        # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
+        AL, caches = L_model_forward(X, parameters)
+        
+        # Compute cost.
+        cost = compute_cost(AL, Y)
+
+        # Backward propagation.
+        grads = L_model_backward(AL, Y, caches)
+ 
+        # Update parameters.
+        parameters = update_parameters(parameters, grads, learning_rate)
+     
+        # Print the cost every 100 training example
+        if print_cost and i % 100 == 0:
+            print ("Cost after iteration %i: %f" %(i, cost))
+        if print_cost and i % 100 == 0:
+            costs.append(cost)
+    """   
+    # plot the cost
+    plt.plot(np.squeeze(costs))
+    plt.ylabel('cost')
+    plt.xlabel('iterations (per tens)')
+    plt.title("Learning rate =" + str(learning_rate))
+    plt.show()
+    """
+    return parameters
+    
 inputs = [] # Train data
 targets = [] # Train result
 result = [[1 if i == j else 0 for i in range(10)]
-                   for j in range(10)]
+                    for j in range(10)]
 
 directory = os.fsencode("data/")
 for file in os.listdir(directory):
@@ -39,10 +145,55 @@ for file in os.listdir(directory):
     # Append corresponding train data and result
     inputs.append(fc)
     targets.append(result[serial])
-    
-# print(inputs)
-# print(targets)
 
+inputs = np.array(inputs).T
+targets = np.array(targets).T
+
+# Standardize data to have feature values between 0 and 1.
+inputs = inputs/255.
+
+print("Inputs Shape : ", inputs.shape)
+print("Targets Shape : ", targets.shape)
+
+
+### CONSTANTS ###
+layers_dims = [inputs.shape[0], 30, 20, 10] #  4-layer model
+
+parameters = L_layer_model(inputs, targets, layers_dims, num_iterations = 2500, print_cost = True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 random.seed(0)   # to get repeatable results
 input_size = len(fc)  # each input is a vector of length 49
 num_hidden = 5   # we'll have 5 neurons in the hidden layer
@@ -59,21 +210,26 @@ output_layer = [[random.random() for __ in range(num_hidden + 1)]
 # the network starts out with random weights
 network = [hidden_layer, output_layer]
 
-
-'''---------------------- Backpropagation ---------------------------'''
+"""---------------------- Backpropagation ---------------------------"""
 # 10000 iterations seems enough to converge // 10000
 for __ in range(10):
     for input_vector, target_vector in zip(inputs, targets):
         backpropagate(network, input_vector, target_vector)
+"""---------------------- Predict the output ---------------------------"""
 
-'''---------------------- Predict the output ---------------------------'''
 directory = os.fsencode("test/")
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
     print(filename)
     img = io.imread("test/" + filename)
     fc = connvolution_process(img)  # Return Fully connected layer
+    print(fc)
+    with open('file.txt', 'w') as f:
+        for item in fc:
+            f.write("%s\n" % item)
     pred_list = predict(network, fc)
     print("\n\n\nPrediction : ", pred_list)
     print("*************** See the Result Folder to see Test image result with image ************************")  
     draw_output(img, "Output_" + filename, max(pred_list), pred_list.index(max(pred_list)))
+
+'''

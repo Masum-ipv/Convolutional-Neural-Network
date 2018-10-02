@@ -63,6 +63,10 @@ def backpropagate(network, input_vector, target):
         for j, input in enumerate(input_vector + [1]):
             hidden_neuron[j] -= hidden_deltas[i] * input
 
+            
+def predict(network, input):
+    return feed_forward(network, input)[-1]  
+            
 def patch(x, y, hatch, color):
     """return a matplotlib 'patch' object with the specified
     location, crosshatch pattern, and color"""
@@ -70,8 +74,7 @@ def patch(x, y, hatch, color):
                                         hatch=hatch, fill=False, color=color)
 
                                         
-def predict(network, input):
-    return feed_forward(network, input)[-1]                               
+                             
 
 def show_weights(neuron_idx):
     weights = network[0][neuron_idx]

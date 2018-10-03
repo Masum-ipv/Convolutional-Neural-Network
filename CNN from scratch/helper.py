@@ -13,8 +13,6 @@ def relu_backward(dA, cache):
     
     Z = cache
     dZ = np.array(dA, copy=True) # just converting dz to a correct object.
-    print(Z.shape)
-    print(dZ.shape)
     # When z <= 0, you should set dz to 0 as well. 
     dZ[Z <= 0] = 0
     
@@ -162,15 +160,15 @@ def compute_cost(AL, Y):
     Returns:
     cost -- cross-entropy cost
     """
-    
+    np.seterr(divide='ignore', invalid='ignore')
     m = Y.shape[1]
 
     # Compute loss from aL and y.
     cost = (-1/m)*np.sum((Y * np.log(AL)) + (1 - Y) * np.log(1-AL))
-    
+   # print ("Cost iteration 1", AL, Y)
     cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
     assert(cost.shape == ())
-    
+    #print ("Cost iteration 2", cost, Y)
     return cost
     
 def L_model_backward(AL, Y, caches):
@@ -196,7 +194,7 @@ def L_model_backward(AL, Y, caches):
     Y = Y.reshape(AL.shape) # after this line, Y is the same shape as AL
     
     # Initializing the backpropagation
-    dAL = dAL = - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+    dAL = - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
     
     # Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "AL, Y, caches". Outputs: "grads["dAL"], grads["dWL"], grads["dbL"]
     ### START CODE HERE ### (approx. 2 lines)
@@ -209,7 +207,7 @@ def L_model_backward(AL, Y, caches):
         # Inputs: "grads["dA" + str(l + 2)], caches". Outputs: "grads["dA" + str(l + 1)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)] 
         ### START CODE HERE ### (approx. 5 lines)
         current_cache = caches[l]
-        dA_prev_temp, dW_temp, db_temp = linear_backward(relu_backward(dAL, current_cache[1]), current_cache[0])
+        dA_prev_temp, dW_temp, db_temp = linear_backward(relu_backward(grads["dA" + str(l + 2)], current_cache[1]), current_cache[0])
         grads["dA" + str(l + 1)] = dA_prev_temp
         grads["dW" + str(l + 1)] = dW_temp
         grads["db" + str(l + 1)] = db_temp
@@ -235,7 +233,7 @@ def linear_backward(dZ, cache):
 
     ### START CODE HERE ### (≈ 3 lines of code)
     dW = np.dot(dZ, cache[0].T) / m
-    db = np.squeeze(np.sum(dZ, axis=1, keepdims=True)) / m
+    db = np.sum(dZ, axis=1, keepdims=True) / m
     dA_prev = np.dot(cache[1].T, dZ)
     ### END CODE HERE ###
     
@@ -244,3 +242,27 @@ def linear_backward(dZ, cache):
     #assert (isinstance(db, float))
     
     return dA_prev, dW, db
+    
+    
+def update_parameters(parameters, grads, learning_rate):
+    """
+    Update parameters using gradient descent
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters 
+    grads -- python dictionary containing your gradients, output of L_model_backward
+    
+    Returns:
+    parameters -- python dictionary containing your updated parameters 
+                  parameters["W" + str(l)] = ... 
+                  parameters["b" + str(l)] = ...
+    """
+    
+    L = len(parameters) // 2 # number of layers in the neural network
+
+    # Update rule for each parameter. Use a for loop.
+    for l in range(L):
+        parameters["W" + str(l+1)] = parameters["W" + str(l+1)] - learning_rate * grads["dW" + str(l+1)]
+        parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate * grads["db" + str(l+1)]
+        
+    return parameters

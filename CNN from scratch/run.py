@@ -5,9 +5,9 @@ from grapical_view import draw_output
 from convolution import connvolution_process
 from collections import Counter
 from functools import partial
-import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
-from helper import initialize_parameters_deep, L_model_forward, compute_cost, L_model_backward, update_parameters
+from helper import initialize_parameters_deep, L_model_forward, compute_cost, L_model_backward, update_parameters, predict
     
 def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False):#lr was 0.009
 
@@ -46,6 +46,7 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     
 inputs = [] # Train data
 targets = [] # Train result
+test = []
 result = [[1 if i == j else 0 for i in range(10)]
                     for j in range(10)]
 
@@ -78,14 +79,14 @@ for file in os.listdir(directory):
     
     # Append corresponding train data and result
     inputs.append(fc)
-    print("Inputs fc : ", fc)
+    
     targets.append(result[serial])
 
 inputs = np.array(inputs).T
 targets = np.array(targets).T
 
 # Standardize data to have feature values between 0 and 1.
-#inputs = inputs/255.
+inputs = inputs/255.
 
 #print("Inputs Shape : ", inputs)
 #print("Targets Shape : ", targets)
@@ -94,9 +95,21 @@ targets = np.array(targets).T
 ### CONSTANTS ###
 layers_dims = [inputs.shape[0], 30, 20, 10] #  4-layer model
 
-parameters = L_layer_model(inputs, targets, layers_dims, num_iterations = 25, print_cost = True)
+parameters = L_layer_model(inputs, targets, layers_dims, num_iterations = 2500, print_cost = True)
 
 
+directory = os.fsencode("test/")
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    img = io.imread("test/" + filename)
+    print("filename ", filename)
+    fc = connvolution_process(img)
+    test.append(fc)
+
+test = np.array(test).T
+test = test/255.
+prediction = predict(test, parameters)
+print(prediction)
 
 
 

@@ -94,7 +94,8 @@ def linear_forward(A, W, b):
     Z -- the input of the activation function, also called pre-activation parameter 
     cache -- a python dictionary containing "A", "W" and "b" ; stored for computing the backward pass efficiently
     """
-
+   # print("A shape ", A.shape)
+   # print("W shape ", W.shape)
     Z = np.dot(W, A) + b
     cache = (A, W, b)
     
@@ -295,19 +296,14 @@ def predict(X, parameters):
     p -- predictions for the given dataset X
     """
     
-    m = X.shape[1]
+    m = len(X)
     n = len(parameters) // 2 # number of layers in the neural network
     p = np.zeros((1,m))
     
     # Forward propagation
     probas, caches = L_model_forward(X, parameters)
-
-    print("probas ", probas.T)
-    # convert probas to 0/1 predictions
-    for i in range(0, probas.shape[1]):
-        if probas[0,i] > 0.5:
-            p[0,i] = 1
-        else:
-            p[0,i] = 0
-        
-    return p
+    
+    probas = probas.T
+    print("\n\nprobas ", probas)
+    print("max probas ", max(probas))
+    print("index probas ", probas.index(max(probas)))

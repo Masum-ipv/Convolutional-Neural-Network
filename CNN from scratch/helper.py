@@ -1,5 +1,95 @@
 import numpy as np
+import os
+from skimage import data, io, color
+from convolution import connvolution_process
+from numpy import loadtxt
 
+result = [[1 if i == j else 0 for i in range(10)]
+                    for j in range(10)]
+targets = [] # Train result
+test_file = []
+
+def load_data(conv_path_dev, conv_path_test, data_path):
+    lines = loadtxt(conv_path_dev, unpack=False)
+    if lines.size == 0:
+        directory = os.fsencode(data_path)
+        with open(conv_path_dev, 'w') as f:
+            for file in os.listdir(directory):
+                filename = os.fsdecode(file)
+                img = io.imread(data_path + filename)
+                print("train data filename: ", filename, img.shape)
+                if filename.startswith("B0"): 
+                    serial = 0
+                elif filename.startswith("B1"):
+                    serial = 1
+                elif filename.startswith("B2"):
+                    serial = 2
+                elif filename.startswith("B3"):
+                    serial = 3
+                elif filename.startswith("B4"):
+                    serial = 4
+                elif filename.startswith("B5"):
+                    serial = 5
+                elif filename.startswith("B6"):
+                    serial = 6
+                elif filename.startswith("B7"):
+                    serial = 7
+                elif filename.startswith("B8"):
+                    serial = 8
+                elif filename.startswith("B9"):
+                    serial = 9
+                fc = connvolution_process(img)  # Return Fully connected layer
+                #print(fc)
+
+                # Append corresponding train data and result
+                np.savetxt(f, fc.reshape((1, fc.size)))
+                targets.append(result[serial])
+
+        with open(conv_path_test, 'w') as f:
+            np.savetxt(f, targets)
+    lines = loadtxt(conv_path_dev, unpack=False)
+    targets_result = loadtxt(conv_path_test, unpack=False)
+    return lines, targets_result
+
+def load_test_data(conv_path_test, data_path):
+    lines = loadtxt(conv_path_test, unpack=False)
+    directory = os.fsencode(data_path)
+    if lines.size == 0:
+        with open(conv_path_test, 'w') as f:
+            for file in os.listdir(directory):
+                filename = os.fsdecode(file)
+                img = io.imread(data_path + filename)
+                print("Test data filename: ", filename, img.shape)
+                if filename.startswith("B0"): 
+                    serial = 0
+                elif filename.startswith("B1"):
+                    serial = 1
+                elif filename.startswith("B2"):
+                    serial = 2
+                elif filename.startswith("B3"):
+                    serial = 3
+                elif filename.startswith("B4"):
+                    serial = 4
+                elif filename.startswith("B5"):
+                    serial = 5
+                elif filename.startswith("B6"):
+                    serial = 6
+                elif filename.startswith("B7"):
+                    serial = 7
+                elif filename.startswith("B8"):
+                    serial = 8
+                elif filename.startswith("B9"):
+                    serial = 9
+                fc = connvolution_process(img)  # Return Fully connected layer
+                #print(fc)
+
+                # Append corresponding train data and result
+                np.savetxt(f, fc.reshape((1, fc.size)))
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        test_file.append(filename)
+    lines = loadtxt(conv_path_test, unpack=False)
+    return lines, test_file
 
 def relu_backward(dA, cache):
     """
@@ -38,6 +128,7 @@ def sigmoid_backward(dA, cache):
     assert (dZ.shape == Z.shape)
     
     return dZ
+
 def sigmoid(Z):
     """
     Implements the sigmoid activation in numpy
@@ -96,7 +187,13 @@ def linear_forward(A, W, b):
     """
    # print("A shape ", A.shape)
    # print("W shape ", W.shape)
-    Z = np.dot(W, A) + b
+    try:
+        Z = np.dot(W, A) + b
+    except Exception as e:
+        print ("\n\nW : ", W)
+        print ("A : ", A)
+        print("type error: " + str(e))
+
     cache = (A, W, b)
     
     return Z, cache
@@ -303,7 +400,6 @@ def predict(X, parameters):
     # Forward propagation
     probas, caches = L_model_forward(X, parameters)
     
-    probas = probas.T
-    print("\n\nprobas ", probas)
-    print("max probas ", max(probas))
-    print("index probas ", probas.index(max(probas)))
+    return probas.T
+    #probas = probas.T
+    #print("\n\nprobas Transpose: ", probas)

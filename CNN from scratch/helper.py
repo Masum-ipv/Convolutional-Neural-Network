@@ -17,7 +17,7 @@ def load_data(conv_path_dev, conv_path_test, data_path):
             for file in os.listdir(directory):
                 filename = os.fsdecode(file)
                 img = io.imread(data_path + filename)
-                print("train data filename: ", filename, img.shape)
+                print("Train data filename: ", filename, img.shape)
                 if filename.startswith("B0"): 
                     serial = 0
                 elif filename.startswith("B1"):
@@ -253,7 +253,7 @@ def L_model_forward(X, parameters):
     for l in range(1, L):
         A_prev = A 
         
-        A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], 'sigmoid')
+        A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], 'relu')
         caches.append(cache)
     
     # Implement LINEAR -> relu. Add "cache" to the "caches" list.
@@ -320,7 +320,7 @@ def L_model_backward(AL, Y, caches):
         # Inputs: "grads["dA" + str(l + 2)], caches". Outputs: "grads["dA" + str(l + 1)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)] 
         ### START CODE HERE ### (approx. 5 lines)
         current_cache = caches[l]
-        dA_prev_temp, dW_temp, db_temp = linear_backward(sigmoid_backward(grads["dA" + str(l + 2)], current_cache[1]), current_cache[0])
+        dA_prev_temp, dW_temp, db_temp = linear_backward(relu_backward(grads["dA" + str(l + 2)], current_cache[1]), current_cache[0])
         grads["dA" + str(l + 1)] = dA_prev_temp
         grads["dW" + str(l + 1)] = dW_temp
         grads["db" + str(l + 1)] = db_temp

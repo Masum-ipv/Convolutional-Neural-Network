@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from helper import initialize_parameters_deep, L_model_forward, compute_cost, L_model_backward, update_parameters, predict, load_data, load_test_data
 
-data_path = "dev_data/"
+data_path = "train_data/"
 test_path = "test_data/"
 test = []
 
@@ -87,5 +87,5 @@ print(test_file)
 print(predict)
 
 # , predict[i].index(max(predict[i]))
-for i in range(1, predict.size):
-    print (test_file[i], max(predict[i]))
+for i in range(0, len(test_file)):
+    print (test_file[i], max(predict[i]), np.where(predict[i] == predict[i].max()))

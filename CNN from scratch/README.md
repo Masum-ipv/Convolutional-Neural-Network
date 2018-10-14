@@ -1,5 +1,6 @@
 ## Implementation of Bangla Handwriting Recognition From Scratch
 
+Store convolutional layer output in text file (As convolutional layer time comsuming)
 
 ### The major steps involved are as follows:
 
@@ -28,11 +29,12 @@
 ```sh
 $ python run.py
 ```
+##### Accuracy 80%
 
+![plot](https://github.com/Masum-ipv/Convolutional-Neural-Network/blob/develop/CNN%20from%20scratch/cost.png)
 
 * data Folder: Train Data
 * test Folder: Test Data
-* result Folder: Test Data Graphical View
 
 
 #### Resources:

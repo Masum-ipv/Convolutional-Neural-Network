@@ -31,7 +31,7 @@ $ python run.py
 ```
 ##### Accuracy 80%
 
-(!plot)()
+![plot](https://github.com/Masum-ipv/Convolutional-Neural-Network/blob/develop/CNN%20from%20scratch/cost.png)
 
 * data Folder: Train Data
 * test Folder: Test Data

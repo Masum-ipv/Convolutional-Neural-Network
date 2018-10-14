@@ -8,6 +8,7 @@ from functools import partial
 import matplotlib.pyplot as plt
 import numpy as np
 from helper import initialize_parameters_deep, L_model_forward, compute_cost, L_model_backward, update_parameters, predict, load_data, load_test_data
+from grad_checking import gradient_check_n
 
 data_path = "train_data/"
 test_path = "test_data/"
@@ -15,7 +16,7 @@ test = []
 
 
 
-def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False):#lr was 0.009
+def L_layer_model(X, Y, layers_dims, learning_rate = 0.06, num_iterations = 5000, print_cost=False):#lr was 0.009
 
     np.random.seed(1)
     costs = []                         # keep track of cost
@@ -36,7 +37,7 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
  
         # Update parameters.
         parameters = update_parameters(parameters, grads, learning_rate)
-     
+
         # Print the cost every 100 training example
         if print_cost and i % 100 == 0:
             print ("Cost after iteration %i: %f" %(i, cost))
@@ -53,8 +54,10 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     return parameters
 
 inputs, targets = load_data("dev_conv.txt", "train_result.txt", data_path)
-print (inputs.shape)
-print (targets.shape)
+#temp = np.reshape(inputs[0], (7,7,1))
+#print (temp)
+#plt.imshow(temp[:, :, 0]).set_cmap("gray")
+#plt.show()
 
 
 inputs = np.array(inputs).T
@@ -73,7 +76,6 @@ print("layers_dims: ", layers_dims)
 
 parameters = L_layer_model(inputs, targets, layers_dims, num_iterations = 2500, print_cost = True)
 
-
 test_data, test_file = load_test_data("test_conv.txt", test_path)
 
 test_data = np.array(test_data).T
@@ -83,9 +85,5 @@ test_data = test_data/255.
 predict = predict(test_data, parameters)
 print("Predict shape: ", predict.shape)
 
-print(test_file)
-print(predict)
-
-# , predict[i].index(max(predict[i]))
 for i in range(0, len(test_file)):
     print (test_file[i], max(predict[i]), np.where(predict[i] == predict[i].max()))

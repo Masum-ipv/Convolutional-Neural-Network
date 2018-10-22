@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 
 def showImage(path):
-    img = misc.imread('01.png')
-    print img.shape
+    img = misc.imread(PATH)
+    print("Image Shape: ", img.shape)
     img_tf = tf.Variable(img)
-    init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
     sess = tf.Session()
     sess.run(init)
     im = sess.run(img_tf)

@@ -1,4 +1,4 @@
-### Bangla Hand Written Recognition
+### Bangla Hand Written Digit Recognition
 ```sh
 $ git clone git@github.com:Masum-ipv/Convolutional-Neural-Network.git
 $ cd <Progect Name>

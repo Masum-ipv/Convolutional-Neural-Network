@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import numpy as np
 import os
 from skimage import data, io, color
@@ -392,10 +393,7 @@ def predict(X, parameters):
     Returns:
     p -- predictions for the given dataset X
     """
-    
-    m = len(X)
     n = len(parameters) // 2 # number of layers in the neural network
-    p = np.zeros((1,m))
     
     # Forward propagation
     probas, caches = L_model_forward(X, parameters)

@@ -7,6 +7,11 @@ from os.path import isfile,join
 import cv2
 import math
 from scipy import misc, ndimage
+import imgaug as ia
+from imgaug import augmenters as iaa
+import imageio
+from utils import create_placeholders, initialize_parameters, forward_propagation, compute_cost, random_mini_batches, forward_propagation_for_predict, predict, data_augmentation
+
 
 
 #Data Preparation
@@ -29,7 +34,12 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate, num_epochs, minibatch
     Z3 = forward_propagation(X, parameters)
     
     cost = compute_cost(Z3, Y)
+    print(cost)
+    
+    # Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer.
+    ### START CODE HERE ### (1 line)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    ### END CODE HERE ###
     
     # Initialize all the variables
     init = tf.global_variables_initializer()
@@ -53,9 +63,14 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate, num_epochs, minibatch
                 # Select a minibatch
                 (minibatch_X, minibatch_Y) = minibatch
                 
+                # IMPORTANT: The line that runs the graph on a minibatch.
+                # Run the session to execute the "optimizer" and the "cost", the feedict should contain a minibatch for (X,Y).
+                ### START CODE HERE ### (1 line)
                 _ , minibatch_cost = sess.run([optimizer, cost], 
                                              feed_dict={X: minibatch_X, 
                                                         Y: minibatch_Y})
+                ### END CODE HERE ###
+                
                 epoch_cost += minibatch_cost / num_minibatches
 
             # Print the cost every epoch
@@ -70,6 +85,9 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate, num_epochs, minibatch
         plt.xlabel('iterations (per tens)')
         plt.title("Learning rate =" + str(learning_rate))
         plt.show()
+        
+#        check=sess.run(tf.test.compute_gradient_error(X_train, X_train.shape, Y_train, Y_train.shape))
+#        print(check)
 
         # lets save the parameters in a variable
         parameters = sess.run(parameters)
@@ -82,12 +100,14 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate, num_epochs, minibatch
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
         print ("Train Accuracy:", accuracy.eval({X: X_train, Y: Y_train}))
+        print("X_test -------", X_test.shape)
         print ("Test Accuracy:", accuracy.eval({X: X_test, Y: Y_test}))
         
         return parameters
 
 
 
+#Data Preparation
 #Data Preparation
 TrainFolderNames = []
 TestFolderNames = []
@@ -105,8 +125,17 @@ for folder in TrainFolderNames:
     for image in listdir(folder):
         img =cv2.imread(join(folder,image))
         img = cv2.resize(img,(32,32))
+        
         trainData.append(img.flatten())
         trainResponseData.append(k)
+        
+        image_gray = cv2.subtract(255, img)
+        trainData.append(image_gray.flatten())
+        trainResponseData.append(k)
+        #images_aug = data_augmentation(img)
+        #for i in range(32):
+          #trainData.append(images_aug[i].flatten())
+          #trainResponseData.append(k)
     k=k+1
     
 k=0
@@ -136,14 +165,12 @@ print("Y_train shape ", Y_train.shape)
 print("X_test shape ", X_test.shape)
 print("Y_test shape ", Y_test.shape)
 
-
 parameters = model(X_train, Y_train, X_test, Y_test, 0.0001, 600, 32)
 
 
 
 
 # Predict all test image
-X_test = X_test.T
 for i in range (30):
   my_image = X_test[i].reshape(3072, 1)
   my_image_prediction = predict(my_image, parameters)
@@ -153,17 +180,17 @@ for i in range (30):
 
 
 # Predict my own image
-fname = 'Convolutional-Neural-Network/cnn_tensorflow/test_data/0/0.tif'
+fname = 'Convolutional-Neural-Network/cnn_tensorflow/test_low/seven.jpg'
 image = cv2.imread(fname)
-print(image.shape)
-image = cv2.resize(image,(64,64))
 my_image = cv2.resize(image,(32,32))
-print(my_image.shape)
-my_image = my_image.reshape((1, 32*32*3)).T
+my_image = cv2.subtract(255, my_image)
+plt.imshow(my_image)
+#my_image = np.vectorize(lambda x: 255 - x)(np.ndarray.flatten(my_image))
+#my_image = (np.ndarray.flatten(image))
+my_image = my_image.reshape((32*32*3, 1))
 my_image = my_image/255.
-#my_image = misc.imresize(image, size=(32,32)).reshape((1, 32*32*3)).T   # 32
 print("my_image predict shape ",my_image.shape)
 my_image_prediction = predict(my_image, parameters)
 print(my_image_prediction)
-plt.imshow(image)
+
 print("Your algorithm predicts: y = " + str(np.squeeze(my_image_prediction)))

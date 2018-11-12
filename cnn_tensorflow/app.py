@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from sklearn.externals import joblib
 import numpy as np
 import re 
@@ -16,12 +16,10 @@ def main():
 		return render_template('index.html')
 
 	if request.method == 'POST':
+		print("sfsdfsdfsdf")
 		parameters = joblib.load('parameters.pkl')
-		input_json = request.get_json(force=True) 
-		print('data from client:', input_json)
-		#answer = classifier.predict(x_tfid)
-		print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		return "1"
+		#input_json = request.get_json(force=True) 
+		return jsonify({"hi" : "hello"})
 
 
 if __name__ == "__main__":

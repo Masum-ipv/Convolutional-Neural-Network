@@ -19,17 +19,17 @@ $("#clear-canvas").click(function(){
 
 // Predict button callback
 $("#predict").click(function(){  
-
   // Change status indicator
   $("#status").removeClass().toggleClass("fa fa-spinner fa-spin");
 
   // Get canvas contents as url
   var fac = (1.) / 13.; 
   var url = canvas.toDataURLWithMultiplier('png', fac);
-  console.log('url: ' + url)
+  console.log('fac: ' + fac)
   // Post url to python script
   var jq = $.post('/', url)
     .done(function (json) {
+      console.log('json: ' + json.result)
       if (json.result) {
         $("#status").removeClass().toggleClass("fa fa-check");
         $('#svg-chart').show();

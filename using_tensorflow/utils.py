@@ -61,7 +61,7 @@ def compute_cost(Z3, Y):
     logits = tf.transpose(Z3)
     labels = tf.transpose(Y)
 
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits,
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits,
                                                                  labels=labels))
     return cost
   
@@ -140,7 +140,8 @@ def predict(X, parameters):
     x = tf.placeholder("float", [3072, 1]) # 12288
     
     z3 = forward_propagation_for_predict(x, params)
-    p = tf.argmax(z3)
+    #p = tf.argmax(z3)
+    p = z3
     
     
     sess = tf.Session()

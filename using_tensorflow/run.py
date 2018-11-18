@@ -10,12 +10,14 @@ from scipy import misc, ndimage
 import imgaug as ia
 from imgaug import augmenters as iaa
 import imageio
+from sklearn.externals import joblib
 from utils import create_placeholders, initialize_parameters, forward_propagation, compute_cost, random_mini_batches, forward_propagation_for_predict, predict, data_augmentation
 
 
 
 #Data Preparation
-path = "Convolutional-Neural-Network/cnn_tensorflow/"
+# path = "Convolutional-Neural-Network/cnn_tensorflow/"
+path = ""
 
 def model(X_train, Y_train, X_test, Y_test, learning_rate, num_epochs, minibatch_size, print_cost = True):
 
@@ -165,12 +167,19 @@ print("Y_train shape ", Y_train.shape)
 print("X_test shape ", X_test.shape)
 print("Y_test shape ", Y_test.shape)
 
-parameters = model(X_train, Y_train, X_test, Y_test, 0.0001, 600, 32)
+parameters = model(X_train, Y_train, X_test, Y_test, 0.0001, 200, 32)
+
+
+
+joblib.dump(parameters, 'parameters_test.pkl')
+parameters = joblib.load('parameters_test.pkl')
+
 
 
 
 
 # Predict all test image
+X_test = X_test.T
 for i in range (30):
   my_image = X_test[i].reshape(3072, 1)
   my_image_prediction = predict(my_image, parameters)
@@ -180,7 +189,8 @@ for i in range (30):
 
 
 # Predict my own image
-fname = 'Convolutional-Neural-Network/cnn_tensorflow/test_low/seven.jpg'
+#fname = 'Convolutional-Neural-Network/cnn_tensorflow/test_low/seven.jpg'
+fname = 'test_low/seven.jpg'
 image = cv2.imread(fname)
 my_image = cv2.resize(image,(32,32))
 my_image = cv2.subtract(255, my_image)

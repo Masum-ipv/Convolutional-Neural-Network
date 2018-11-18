@@ -19,6 +19,6 @@ http://127.0.0.1:5000/
 
 
 ### Result:
-![alt text](./result_images/a.png)
-![alt text](./result_images/b.png)
-![alt text](./result_images/c.png)
+![](./using_tensorflow/result_images/a.png)
+![](./using_tensorflow/result_images/b.png)
+![](./using_tensorflow/result_images/c.png)
